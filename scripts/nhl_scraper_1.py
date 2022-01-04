@@ -253,14 +253,14 @@ def scrape_player_stats(game_id: int) -> List[Dict]:
 #%% scrape goalie stats
 def scrape_goalie_stats(game_id: int) -> List[Dict]:
     """
-        retrieves a list of dictionaries containing goalie stats for all 
+        retrieves a list of dictionaries containing goalie stats for all
         goalies that played in the game specified by game_id.
         Each dictionary represents one goalie.
         Refer to: https://github.com/dword4/nhlapi on how to use the NHL API
 
         Arguments
             game_id (int): game id we are retrieving data for
-        
+
         Returns
             List[Dict]: list containing an entry for the home team and away team playing in the
                         same game.
@@ -295,47 +295,57 @@ def scrape_goalie_stats(game_id: int) -> List[Dict]:
     home_goalie_names = []
     away_goalie_names = []
 
-    for i in home_goalie_id: # for loop to iterate through list of home goalies that played this game
-        j = json_data['liveData']['boxscore']['teams']['home']['players']['ID' + str(i)]['person']['fullName']
+    # for loop to iterate through list of home goalies that played this game
+    for i in home_goalie_id:
+        j = json_data['liveData']['boxscore']['teams']['home']['players']['ID' + str(i)]\
+            ['person']['fullName']
         home_goalie_names.append(j)
-    for i in away_goalie_id: # for loop to iterate through list of away goalies that played this game
-        j = json_data['liveData']['boxscore']['teams']['away']['players']['ID' + str(i)]['person']['fullName']
+    # for loop to iterate through list of away goalies that played this game
+    for i in away_goalie_id:
+        j = json_data['liveData']['boxscore']['teams']['away']['players']['ID' + str(i)]\
+            ['person']['fullName']
         away_goalie_names.append(j)
 
     # Get goalie stats
     home_goalie_stats = []
     away_goalie_stats = []
-    for i in home_goalie_id: # for loop to iterate through list of home goalies that played this game
-        j = json_data['liveData']['boxscore']['teams']['home']['players']['ID' + str(i)]['stats']['goalieStats']
+    # for loop to iterate through list of home goalies that played this game
+    for i in home_goalie_id:
+        j = json_data['liveData']['boxscore']['teams']['home']['players']['ID' + str(i)]\
+            ['stats']['goalieStats']
         home_goalie_stats.append(j)
-    for i in away_goalie_id: # for loop to iterate through list of home goalies that played this game
-        j = json_data['liveData']['boxscore']['teams']['away']['players']['ID' + str(i)]['stats']['goalieStats']
+    # for loop to iterate through list of home goalies that played this game
+    for i in away_goalie_id:
+        j = json_data['liveData']['boxscore']['teams']['away']['players']['ID' + str(i)]\
+            ['stats']['goalieStats']
         away_goalie_stats.append(j)
 
     # make home goalie list. for loop needed as there could be more than 2 goalies playing in 1 game
     home_goalies = []
-    counter = list(range(len(home_goalie_stats))) # counter for number of goalies that played
+    goalie_counter = list(range(len(home_goalie_stats))) # counter for number of goalies that played
 
-    for g in counter:
+    for goalie_count in goalie_counter:
         # create dictonary for goalie
         home_goalie = {'date':game_date, 'game_id':game_id, 'team':home_goalie_team,
-                       'goalie_name':home_goalie_names[g], 'goalie_id':home_goalie_id[g],
+                       'goalie_name':home_goalie_names[goalie_count],\
+                           'goalie_id':home_goalie_id[goalie_count],
                        'is_home_team':True}
-        home_goalie.update(home_goalie_stats[g])
-        
+        home_goalie.update(home_goalie_stats[goalie_count])
+
         home_goalies.append(home_goalie)
 
     # make away goalie list. for loop needed as there could be more than 2 goalies playing in 1 game
     away_goalies = []
-    counter = list(range(len(away_goalie_stats))) # counter for number of goalies that played
+    goalie_counter = list(range(len(away_goalie_stats))) # counter for number of goalies that played
 
-    for g in counter:
+    for goalie_count in goalie_counter:
         # create dictonary for goalie
         away_goalie = {'date':game_date, 'game_id':game_id, 'team':away_goalie_team,
-                       'goalie_name':away_goalie_names[g], 'goalie_id':away_goalie_id[g],
+                       'goalie_name':away_goalie_names[goalie_count],\
+                           'goalie_id':away_goalie_id[goalie_count],
                        'is_home_team':False}
-        away_goalie.update(away_goalie_stats[g])
-        
+        away_goalie.update(away_goalie_stats[goalie_count])
+
         away_goalies.append(away_goalie)
 
 
@@ -375,16 +385,22 @@ def scrape_game_info(game_id:int) -> Dict:
     home_team: str = json_data["liveData"]['boxscore']['teams']['home']['team']['abbreviation']
     away_team: str = json_data["liveData"]['boxscore']['teams']['away']['team']['abbreviation']
 
-    # retrieve outcome
-    if json_data['liveData']['linescore']['hasShootout']==False:
-        if json_data["liveData"]["boxscore"]['teams']['home']['teamStats']['teamSkaterStats']['goals'] > json_data["liveData"]["boxscore"]['teams']['away']['teamStats']['teamSkaterStats']['goals']:
+    # retrieve outcome 'hasShootout' is a boolean
+    if not json_data['liveData']['linescore']['hasShootout']:
+        if json_data["liveData"]["boxscore"]['teams']['home']['teamStats']['teamSkaterStats']\
+            ['goals'] > json_data["liveData"]["boxscore"]['teams']['away']['teamStats']\
+                ['teamSkaterStats']['goals']:
             home_team_win = True
-        if json_data["liveData"]["boxscore"]['teams']['home']['teamStats']['teamSkaterStats']['goals'] < json_data["liveData"]["boxscore"]['teams']['away']['teamStats']['teamSkaterStats']['goals']:
+        if json_data["liveData"]["boxscore"]['teams']['home']['teamStats']['teamSkaterStats']\
+            ['goals'] < json_data["liveData"]["boxscore"]['teams']['away']['teamStats']\
+                ['teamSkaterStats']['goals']:
             home_team_win = False
-    if json_data['liveData']['linescore']['hasShootout']==True:
-        if json_data['liveData']['linescore']['shootoutInfo']['home']['scores'] > json_data['liveData']['linescore']['shootoutInfo']['away']['scores']:
+    if json_data['liveData']['linescore']['hasShootout']:
+        if json_data['liveData']['linescore']['shootoutInfo']['home']['scores'] >\
+            json_data['liveData']['linescore']['shootoutInfo']['away']['scores']:
             home_team_win = True
-        if json_data['liveData']['linescore']['shootoutInfo']['home']['scores'] < json_data['liveData']['linescore']['shootoutInfo']['away']['scores']:
+        if json_data['liveData']['linescore']['shootoutInfo']['home']['scores'] <\
+            json_data['liveData']['linescore']['shootoutInfo']['away']['scores']:
             home_team_win = False
 
     # Starting goalies
@@ -393,23 +409,25 @@ def scrape_game_info(game_id:int) -> Dict:
     home_team_starting_goalie_id = json_data["liveData"]['boxscore']['teams']['home']['goalies'][-1]
     away_team_starting_goalie_id = json_data["liveData"]['boxscore']['teams']['away']['goalies'][-1]
     home_team_starting_goalie_name = \
-    json_data["liveData"]['boxscore']['teams']['home']['players']['ID' + str(home_team_starting_goalie_id)][
-        'person']['fullName']
+    json_data["liveData"]['boxscore']['teams']['home']['players']['ID' +\
+        str(home_team_starting_goalie_id)]['person']['fullName']
     away_team_starting_goalie_name = \
-    json_data["liveData"]['boxscore']['teams']['away']['players']['ID' + str(away_team_starting_goalie_id)][
-        'person']['fullName']
+    json_data["liveData"]['boxscore']['teams']['away']['players']['ID' +\
+        str(away_team_starting_goalie_id)]['person']['fullName']
     if game_id == 2020020215: # manually entering incorrect input data in NHL API for this game
-        game_info = {'date':game_date, 'game_id':game_id, 'home_team':home_team, 'away_team':away_team,
-                     'home_team_win':False, 'home_goalie_id':home_team_starting_goalie_id,
-                     'away_goalie_id':away_team_starting_goalie_id,
-                     'home_goalie_name':home_team_starting_goalie_name,
-                     'away_goalie_name':away_team_starting_goalie_name}
+        game_info = {'date':game_date, 'game_id':game_id, 'home_team':home_team,\
+            'away_team':away_team, 'home_team_win':False,\
+                'home_goalie_id':home_team_starting_goalie_id,\
+                    'away_goalie_id':away_team_starting_goalie_id,\
+                        'home_goalie_name':home_team_starting_goalie_name,\
+                            'away_goalie_name':away_team_starting_goalie_name}
     else:
-        game_info = {'date':game_date, 'game_id':game_id, 'home_team':home_team, 'away_team':away_team,
-                     'home_team_win':home_team_win, 'home_goalie_id':home_team_starting_goalie_id,
-                     'away_goalie_id':away_team_starting_goalie_id,
-                     'home_goalie_name':home_team_starting_goalie_name,
-                     'away_goalie_name':away_team_starting_goalie_name}
+        game_info = {'date':game_date, 'game_id':game_id, 'home_team':home_team,\
+            'away_team':away_team, 'home_team_win':home_team_win,\
+                'home_goalie_id':home_team_starting_goalie_id,\
+                    'away_goalie_id':away_team_starting_goalie_id,\
+                        'home_goalie_name':home_team_starting_goalie_name,\
+                            'away_goalie_name':away_team_starting_goalie_name}
     return game_info
 #%%
 def retrieve_team(game_id: int, home: bool) -> str:
@@ -419,7 +437,7 @@ def retrieve_team(game_id: int, home: bool) -> str:
     Arguments
         game_id (int): game id we are retrieving data for
         home (bool): if True retrieves the home team, False retrieves away
-    
+
     Returns
         team (str): team abbreviation
     """
@@ -478,8 +496,8 @@ def get_starting_goalies(home_abv: str, away_abv: str, date: str) -> str:
         away goalie name
     """
 
-    # First define a dictionary to translate team abbreviations in our df to the team names used on daily
-    # faceoff
+    # First define a dictionary to translate team abbreviations
+    # in our df to the team names used on daily faceoff
     team_translations = {'MIN':'Minnesota Wild','TOR':'Toronto Maple Leafs',
                          'PIT':'Pittsburgh Penguins', 'COL':'Colorado Avalanche',
                          'EDM':'Edmonton Oilers', 'CAR':'Carolina Hurricanes',
@@ -503,7 +521,8 @@ def get_starting_goalies(home_abv: str, away_abv: str, date: str) -> str:
     url = f'https://www.dailyfaceoff.com/starting-goalies/{date}'
 
     # Need headers as daily faceoff will block the get request without one
-    headers = {'User-Agent':'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.193 Safari/537.36'}
+    headers = {'User-Agent':'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6)\
+        AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.193 Safari/537.36'}
     result = requests.get(url, headers=headers)
 
     # Parse the data
@@ -520,11 +539,11 @@ def get_starting_goalies(home_abv: str, away_abv: str, date: str) -> str:
             continue
     # retrieve the h4 headings which contain the starting goalies
 
-    h4 = goalie_box.find_all('h4')
+    h4_headings = goalie_box.find_all('h4')
 
     # Away goalie is at element 1 and home goalie is at element 2
-    away_goalie = h4[1].text
-    home_goalie = h4[2].text
+    away_goalie = h4_headings[1].text
+    home_goalie = h4_headings[2].text
 
     return home_goalie, away_goalie
 
@@ -560,9 +579,9 @@ def convert_player_to_id(team_name: str, player_name: str):
 
     team_roster = json_data['teams'][0]['roster']['roster']
 
-    for p in team_roster:
-        if p['person']['fullName'] == player_name:
-            return p['person']['id']
+    for player_info in team_roster:
+        if player_info['person']['fullName'] == player_name:
+            return player_info['person']['id']
         else:
             continue
 
