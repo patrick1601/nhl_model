@@ -56,7 +56,7 @@ def scrape_team_stats(game_id: int) -> List[Dict]:
 
         Arguments
             game_id (int): game id we are retrieving data for
-        
+
         Returns
             List[dict]: list containing an entry for the home team and away team playing in the
                         same game
@@ -86,7 +86,7 @@ def scrape_team_stats(game_id: int) -> List[Dict]:
         ["boxscore"]['teams']['home']['teamStats']['teamSkaterStats']
     team_skater_stats_away = json_data["liveData"]\
         ["boxscore"]['teams']['away']['teamStats']['teamSkaterStats']
-        
+
     # Starting goalies
     # spot checked a few APIs and it seems like the starting goalie will be listed last in the json
     # file if he was pulled. The goalie that finishes the game will be listed first (0).
@@ -128,32 +128,32 @@ def scrape_team_stats(game_id: int) -> List[Dict]:
                            'home_team_win':False,
                            'goalie_id':home_team_starting_goalie_id,
                            'goalie_name':home_team_starting_goalie_name}
-        
+
         home_team_stats.update(team_skater_stats_home)
-    
+
         away_team_stats = {'date':game_date, 'game_id':game_id,
                            'team':away_team, 'is_home_team':False,
                            'home_team_win':False,
                            'goalie_id':away_team_starting_goalie_id,
                            'goalie_name':away_team_starting_goalie_name}
-        
+
         away_team_stats.update(team_skater_stats_away)
-        
+
     else:
         home_team_stats = {'date':game_date, 'game_id':game_id,
                            'team':home_team, 'is_home_team':True,
                            'home_team_win':home_team_win,
                            'goalie_id':home_team_starting_goalie_id,
                            'goalie_name':home_team_starting_goalie_name}
-        
+
         home_team_stats.update(team_skater_stats_home)
-    
+
         away_team_stats = {'date':game_date, 'game_id':game_id,
                            'team':away_team, 'is_home_team':False,
                            'home_team_win':home_team_win,
                            'goalie_id':away_team_starting_goalie_id,
                            'goalie_name':away_team_starting_goalie_name}
-        
+
         away_team_stats.update(team_skater_stats_away)
 
     teams = [home_team_stats, away_team_stats]
@@ -164,10 +164,10 @@ def scrape_player_stats(game_id: int) -> List[Dict]:
     """
     retrieves all player stats for the specified game_id
     Refer to: https://gitlab.com/dword4/nhlapi on how to use the NHL API
-    
+
     Arguments
         game_id (int): Game id for which all player stats will be retrieved by
-    
+
     Returns
         List[Dict]: List containing stats for all players that played in the game.
                     Each Dict represents one player
@@ -203,38 +203,48 @@ def scrape_player_stats(game_id: int) -> List[Dict]:
 
     for i in player_ids:
         player_id = json_data['liveData']['boxscore']['teams']['home']['players'][i]['person']['id']
-        player_name = json_data['liveData']['boxscore']['teams']['home']['players'][i]['person']['fullName']
-        position = json_data['liveData']['boxscore']['teams']['home']['players'][i]['position']['code']
-        try: # skater stats will have a skaterStat key while goalie will have goalieStat and players who didn't play will have nothing
-            stats = json_data['liveData']['boxscore']['teams']['home']['players'][i]['stats']['skaterStats']
+        player_name = json_data['liveData']['boxscore']['teams']['home']['players'][i]['person']\
+            ['fullName']
+        position = json_data['liveData']['boxscore']['teams']['home']['players'][i]['position']\
+            ['code']
+        # skater stats will have a skaterStat key
+        # goalie will have goalieStat and players who didn't play will have nothing
+        try:
+            stats = json_data['liveData']['boxscore']['teams']['home']['players'][i]['stats']\
+                ['skaterStats']
             #create dictonary for player
-            player = {'date':game_date, 'game_id':game_id, 'team':home_team, 
+            player = {'date':game_date, 'game_id':game_id, 'team':home_team,
                       'is_home_team':True, 'player_name':player_name,
                       'player_id':player_id, 'position':position}
             player.update(stats)
             players.append(player)
-            
+
         except KeyError:
             pass
 
-        
+
     # scrape away players
     # get away player ids
     player_ids = list(json_data['liveData']['boxscore']['teams']['away']['players'])
 
     for i in player_ids:
         player_id = json_data['liveData']['boxscore']['teams']['away']['players'][i]['person']['id']
-        player_name = json_data['liveData']['boxscore']['teams']['away']['players'][i]['person']['fullName']
-        position = json_data['liveData']['boxscore']['teams']['away']['players'][i]['position']['code']
-        try: # skater stats will have a skaterStat key while goalie will have goalieStat and players who didn't play will have nothing
-            stats = json_data['liveData']['boxscore']['teams']['away']['players'][i]['stats']['skaterStats']
+        player_name = json_data['liveData']['boxscore']['teams']['away']['players'][i]['person']\
+            ['fullName']
+        position = json_data['liveData']['boxscore']['teams']['away']['players'][i]['position']\
+            ['code']
+        # skater stats will have a skaterStat key
+        # goalie will have goalieStat and players who didn't play will have nothing
+        try:
+            stats = json_data['liveData']['boxscore']['teams']['away']['players'][i]\
+                ['stats']['skaterStats']
             #create dictonary for player
             player = {'date':game_date, 'game_id':game_id, 'team':away_team,
                       'is_home_team':False, 'player_name':player_name,
                       'player_id':player_id, 'position':position}
             player.update(stats)
             players.append(player)
-        
+
         except KeyError:
             pass
 
@@ -243,8 +253,9 @@ def scrape_player_stats(game_id: int) -> List[Dict]:
 #%% scrape goalie stats
 def scrape_goalie_stats(game_id: int) -> List[Dict]:
     """
-        retrieves a list of dictionaries containing goalie stats for all goalies that played in the game
-        specified by game_id. Each dictionary represents one goalie.
+        retrieves a list of dictionaries containing goalie stats for all 
+        goalies that played in the game specified by game_id.
+        Each dictionary represents one goalie.
         Refer to: https://github.com/dword4/nhlapi on how to use the NHL API
 
         Arguments
@@ -533,7 +544,7 @@ def convert_player_to_id(team_name: str, player_name: str):
     player_id: int
         player id
     """
-    url = f'https://statsapi.web.nhl.com/api/v1/teams'
+    url = 'https://statsapi.web.nhl.com/api/v1/teams'
     resp = requests.get(url)
     json_data = json.loads(resp.text)
 
@@ -556,12 +567,12 @@ def convert_player_to_id(team_name: str, player_name: str):
             continue
 
 #%%
-ids = get_game_ids(20182019)
+ids_test = get_game_ids(20182019)
 #%%
-team = scrape_team_stats(ids[60])
+team_test = scrape_team_stats(ids_test[60])
 #%%
-players = scrape_player_stats(ids[60])
+players_test = scrape_player_stats(ids_test[60])
 #%%
-goalies = scrape_goalie_stats(ids[66])
+goalies_test = scrape_goalie_stats(ids_test[66])
 #%%
-game=scrape_game_info(ids[66])
+game_test = scrape_game_info(ids_test[66])
