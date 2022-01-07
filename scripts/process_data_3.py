@@ -81,7 +81,7 @@ def convert_minutes(min):
     return minutes_played
 
 #%% convert non-numerical features in dataframes to numerical
-def convert_numerical(teams_df: pd.DataFrame, goalies_df: pd.DataFrame) -> (pd.DataFrame, pd.DataFrame):
+def convert_numerical(teams_df: pd.DataFrame, goalies_df: pd.DataFrame) -> pd.DataFrame:
     """
         convert non-numerical features in dataframes to numerical
         ...

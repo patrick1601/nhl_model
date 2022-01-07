@@ -156,3 +156,4 @@ with open('/Users/patrickpetanca/projects/nhl_model/data/goalie_stats.pkl', 'wb'
 game_info = pull_game_info(game_ids)
 with open('/Users/patrickpetanca/projects/nhl_model/data/games_info.pkl', 'wb') as f:
     pickle.dump(game_info, f)
+    
