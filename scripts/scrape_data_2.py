@@ -141,7 +141,7 @@ def pull_game_info(ids: List[int]) -> List[dict]:
     return games_info
 
 #%% scrape game ids
-game_ids = pull_game_ids(first_year=2010, last_year=2020)
+game_ids = pull_game_ids(first_year=2010, last_year=2021)
 with open('/Users/patrickpetanca/projects/nhl_model/data/game_ids.pkl', 'wb') as f:
     pickle.dump(game_ids, f)
 #%% scrape team stats
