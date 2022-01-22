@@ -84,6 +84,8 @@ def get_xgbparams(space, evals=15):
 #%% import games_df
 with open('/Users/patrickpetanca/projects/nhl_model/data/games_df.pkl', 'rb') as f:
     df = pickle.load(f)
+print(df)
+sys.exit
 #%% Shuffle data
 np.random.seed(42)
 df = df.reindex(np.random.permutation(df.index))

@@ -258,7 +258,7 @@ def get_diff_df(df, name, is_goalie=False):
     """
     # Sort by date
     df = df.sort_values(by='date').copy()
-    newindex = df.groupby('date')['date'].apply(lambda x: x + np.arange(x.size).astype(np.timedelta64))
+    newindex = df.groupby('date')['date'].apply(lambda x: x + np.arange(x.size).astype(np.timedelta64(1,'D')))
     df = df.set_index(newindex).sort_index()
 
     # get stat columns
