@@ -469,7 +469,7 @@ def get_diff_df(df, name, is_goalie=False):
     """
     # Sort by date
     df = df.sort_values(by='date').copy()
-    newindex = df.groupby('date')['date'].apply(lambda x: x + np.arange(x.size).astype(np.timedelta64))
+    newindex = df.groupby('date')['date'].apply(lambda x: x + np.arange(x.size).astype(np.timedelta64(1,'D')))
     df = df.set_index(newindex).sort_index()
 
     # get stat columns
@@ -834,7 +834,7 @@ def trueskill(df):
 with open('/Users/patrickpetanca/projects/nhl_model/data/games_df.pkl', 'rb') as f:
     games_df = pickle.load(f)
 #%% get new game ids to add to main games_df
-new_game_ids = update_game_ids(20202021, games_df)   
+new_game_ids = update_game_ids(20212022, games_df)   
 #%% retrieve team game by game stats for all new game ids pulled
 new_team_stats = pull_team_stats(new_game_ids)
 #%% retrieve goalie game by game stats for all new game ids pulled

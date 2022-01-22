@@ -662,7 +662,7 @@ def get_diff_df(df, name, is_goalie=False):
     """
     # Sort by date
     df = df.sort_values(by='date').copy()
-    newindex = df.groupby('date')['date'].apply(lambda x: x + np.arange(x.size).astype(np.timedelta64))
+    newindex = df.groupby('date')['date'].apply(lambda x: x + np.arange(x.size).astype(np.timedelta64(1,'D')))
     df = df.set_index(newindex).sort_index()
 
     # get stat columns
@@ -1054,10 +1054,10 @@ def trueskill(df):
     df['away_team_ts'] = away_team_ts
 
     return df
-#%% get game ids to predict input
-predict_ids = main_get_predict_game_ids('2021-04-22')
-#%% string date input
-string_date = '04-22-2021'
+#%% get game ids to predict input YYYY-MM-DD
+predict_ids = main_get_predict_game_ids('2022-01-22')
+#%% string date input MM-DD-YYYY
+string_date = '01-22-2022'
 #%% remove any postponed games
 #predict_ids.remove(2020020191)
 #%% retrieve game by game information for all predict game ids pulled
@@ -1178,3 +1178,7 @@ prediction_df.reset_index(inplace=True, drop=True)
 predictions = make_predictions(prediction_df)
 
 todays_date = str(dt.datetime.today()).split()[0]
+print(predictions)
+#%% dump preditions
+with open('/Users/patrickpetanca/projects/nhl_model/data/predictions.pkl', 'wb') as f:
+    pickle.dump(predictions, f)
