@@ -90,7 +90,7 @@ def get_starting_goalies(home_abv: str, away_abv: str, date: str) -> (str, str):
                          'ANA':'Anaheim Ducks', 'DAL':'Dallas Stars',
                          'NYR':'New York Rangers', 'FLA':'Florida Panthers',
                          'WPG':'Winnipeg Jets', 'ARI':'Arizona Coyotes',
-                         'VGK':'Vegas Golden Knights'}
+                         'VGK':'Vegas Golden Knights','SEA':'Seattle Kraken'}
 
     home_team = team_translations[home_abv]
     away_team = team_translations[away_abv]
@@ -1055,9 +1055,9 @@ def trueskill(df):
 
     return df
 #%% get game ids to predict input YYYY-MM-DD
-predict_ids = main_get_predict_game_ids('2022-01-22')
+predict_ids = main_get_predict_game_ids('2022-01-23')
 #%% string date input MM-DD-YYYY
-string_date = '01-22-2022'
+string_date = '01-23-2022'
 #%% remove any postponed games
 #predict_ids.remove(2020020191)
 #%% retrieve game by game information for all predict game ids pulled
@@ -1180,5 +1180,10 @@ predictions = make_predictions(prediction_df)
 todays_date = str(dt.datetime.today()).split()[0]
 print(predictions)
 #%% dump preditions
+with open('/Users/patrickpetanca/projects/nhl_model/data/predictions.pkl', 'rb') as f:
+    old_predictions_df = pickle.load(f)
+
+new_predictions_df = old_predictions_df.append(predictions)
+
 with open('/Users/patrickpetanca/projects/nhl_model/data/predictions.pkl', 'wb') as f:
-    pickle.dump(predictions, f)
+    pickle.dump(new_predictions_df, f)

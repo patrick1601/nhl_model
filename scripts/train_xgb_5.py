@@ -148,7 +148,7 @@ with open('/Users/patrickpetanca/projects/nhl_model/data/baseline.pkl', 'rb') as
 #%%
     data = [
     (outcomes, predictions, probabilities, 'Sportsbook'),
-    (y_test, xgb_test_preds, xgb_test_proba, 'XGBoostStd')
+    (y_test, xgb_test_preds, xgb_test_proba, 'XGBoostOpt')
 ]
 cal_curve(data, 15, 'optimized.png')
 #%% dump optimized model
